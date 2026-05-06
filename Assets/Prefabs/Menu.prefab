@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &9154648118540201098
+--- !u!1 &8524895579708401290
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 888422025503381732}
-  - component: {fileID: 2978799611020166890}
+  - component: {fileID: 2440820259470004439}
+  - component: {fileID: -2668123536744859311}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: Menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &888422025503381732
+--- !u!4 &2440820259470004439
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9154648118540201098}
+  m_GameObject: {fileID: 8524895579708401290}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,23 +32,15 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2978799611020166890
+--- !u!114 &-2668123536744859311
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9154648118540201098}
+  m_GameObject: {fileID: 8524895579708401290}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5117ef1ddb14094e9a2f603d81a9733, type: 3}
+  m_Script: {fileID: 11500000, guid: 245fb5c1125ce1b4c80b5cf1866088dc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  score: {fileID: 0}
-  smiley: {fileID: 0}
-  quitGameClip: {fileID: 8300000, guid: a490768b126207e489b993663d3c2b6d, type: 3}
-  levelEndClip: {fileID: 8300000, guid: 4fc13c1dd5d8f0c4dac742c8c88c8a4d, type: 3}
-  cheersClip: {fileID: 8300000, guid: 1945fd06c3bad8a44a8acbfd4c127c75, type: 3}
-  timer: 0
-  timerOn: 0
-  minimunTime: 999999
+  m_EditorClassIdentifier: Assembly-CSharp::Menu

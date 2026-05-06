@@ -27,6 +27,5 @@ public class BallMovement : MonoBehaviour
         rb.AddForce(launchForce);
         transform.parent = null;
         IsBallLaunched = true;
-        Debug.Log(launchForce);
     }
 }

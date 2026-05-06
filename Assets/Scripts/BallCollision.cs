@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class BallCollision : MonoBehaviour
 {
-    GameManager gameManager;
     Rigidbody2D rb;
     const float margen = 0.2f;
     const float impulse = 0.5f;
@@ -16,7 +15,6 @@ public class BallCollision : MonoBehaviour
 
     void Start()
     {
-        gameManager = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -85,14 +83,14 @@ public class BallCollision : MonoBehaviour
             AudioManager.Instance.PlaySoundEffect(brickClip, 0.25f);
             //AudioManager.Instance.PlaySoundEffectName("Brick", 0.25f);
             Destroy(collision.gameObject);
-            gameManager.DecreaseBlock();
+            GameManager.Instance.DecreaseBlock();
         }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
         AudioManager.Instance.PlaySoundEffect(ballFailClip, 0.5f);
-        gameManager.RestartScene();
+        GameManager.Instance.RestartScene();
     }
 }
 

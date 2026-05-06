@@ -3,21 +3,25 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     int blocksLeft;
-    const int lastScene = 7;
+    const int lastScene = 6;
     bool quit = false;
     int activeSceneIndex;
-    TimerHolder timeScript;
-    [SerializeField] TextMeshProUGUI score;
-    [SerializeField] Image smiley;
+
     [SerializeField] AudioClip quitGameClip;
     [SerializeField] AudioClip levelEndClip;
     [SerializeField] AudioClip cheersClip;
 
+    public float timer = 0;
+    public bool timerOn = false;
+    public float minimunTime = 999999f;
+
     public static GameManager Instance { get; private set; }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -27,30 +31,50 @@ public class GameManager : MonoBehaviour
         else
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
-
-
-    // Start is called before the first frame update
-    void Start()
+        private void OnEnable()
     {
-        activeSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        activeSceneIndex = scene.buildIndex;
         blocksLeft = GameObject.FindGameObjectsWithTag("Block").Length;
-        timeScript = GameObject.Find("TimerHolder").GetComponent<TimerHolder>();
-        //timeScript.timerOn = true; // Provisional
-        if (SceneManager.GetActiveScene().buildIndex == lastScene) 
+        Debug.Log($"Scene: {activeSceneIndex}, blocksLeft: {blocksLeft}");
+        // End game logic goes here
+        if (activeSceneIndex == lastScene)
         {
-            score.text = string.Format(" {00000}", Math.Floor(timeScript.timer));
-            if (timeScript.timer < timeScript.minimunTime)
+            TextMeshProUGUI score = GameObject.Find("scoreText")?.GetComponent<TextMeshProUGUI>();
+            Image smiley = GameObject.Find("Smiley")?.GetComponent<Image>();
+            timerOn = false;
+            score.text = string.Format("{0:00000}", Math.Floor(timer));
+            Debug.Log($"timer: {timer} , minimunTime: {minimunTime}");
+            if (timer < minimunTime)
             {
                 smiley.gameObject.SetActive(true);
                 AudioManager.Instance.PlaySoundEffect(cheersClip, 0.5f);
+                SaveScore((int) timer);
             }
-            timeScript.SaveScore();
         }
-
     }
 
+    void Start()
+    {
+        ReadScore();
+        Debug.Log($"minimunTime: {minimunTime}");
+        SceneManager.LoadScene(5);
+        timerOn = true;
+    }
+
+    
     public void RestartScene()
     {
         SceneManager.LoadScene(activeSceneIndex);
@@ -69,16 +93,16 @@ public class GameManager : MonoBehaviour
     public void LoadNextScene()
     {
         int nextSceneIndex = activeSceneIndex + 1;
-        timeScript.timerOn = true;
-        if (nextSceneIndex == lastScene)
-        {
-            timeScript.timerOn = false;
-        }
         SceneManager.LoadScene(nextSceneIndex);
     }
 
     private void Update()
     {
+        if (timerOn == true)
+        {
+            timer += Time.deltaTime;
+        }
+
         if (Input.GetKey("escape") && activeSceneIndex > 1 && activeSceneIndex < lastScene)
         {
             if (quit == false)
@@ -89,11 +113,41 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     public void QuitGame()
     {
         AudioManager.Instance.PlaySoundEffect(quitGameClip, 0.5f);
         Application.Quit();
+    }
+
+    void ReadScore()
+    {
+        if (PlayerPrefs.HasKey("highScore"))
+        {
+            minimunTime = PlayerPrefs.GetFloat("highScore");
+            if (minimunTime == 0)
+            {
+                PlayerPrefs.SetFloat("highScore", 999999f);
+                PlayerPrefs.Save();
+                minimunTime = 999999f;
+            }
+        }
+        else
+        {
+            minimunTime = 999999f;
+            PlayerPrefs.SetFloat("highScore", minimunTime);
+            PlayerPrefs.Save();
+        }
+    }
+    public void SaveScore(int minimun)
+    {
+        PlayerPrefs.SetFloat("highScore", minimun);
+        PlayerPrefs.Save();
+    }
+
+    public void ResetScore()
+    {
+        PlayerPrefs.SetFloat("highScore", (int) 999999);
+        PlayerPrefs.Save();
     }
 
 }

@@ -11,20 +11,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float speed;
     [SerializeField] TextMeshProUGUI score;
     [SerializeField] TextMeshProUGUI minimunTime;
-    TimerHolder timeScript;
     float bounds = 5.05f;
 
     private void Start()
     {
-        timeScript = GameObject.Find("TimerHolder").GetComponent<TimerHolder>();
     }
 
     // Update is called once per frame
     void Update()
     {
         Move();
-        score.text = string.Format(" {00000}", Math.Floor(timeScript.timer));
-        minimunTime.text = string.Format(" {00000}", Math.Floor(timeScript.minimunTime));
+        score.text = string.Format(" {00000}", Math.Floor(GameManager.Instance.timer));
+        minimunTime.text = string.Format(" {00000}", Math.Floor(GameManager.Instance.minimunTime));
     }
 
     private void Move()
