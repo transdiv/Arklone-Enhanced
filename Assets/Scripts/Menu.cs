@@ -6,4 +6,9 @@ public class Menu : MonoBehaviour
     {
         GameManager.Instance.LoadNextScene();
     }
+
+    public void QuitGame()
+    {
+        GameManager.Instance.QuitGame();
+    }
 }

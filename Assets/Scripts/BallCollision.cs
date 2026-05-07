@@ -23,7 +23,7 @@ public class BallCollision : MonoBehaviour
         DestroyIfIsBlock(collision);
         if (collision.gameObject.name == "Player")
         {
-            AudioManager.Instance.PlaySoundEffect(playerClip, 0.5f);
+            GameManager.Instance.PlaySoundEffect(playerClip, 0.5f);
         }
         if (collision.gameObject.tag == "Wall")
         {
@@ -72,7 +72,7 @@ public class BallCollision : MonoBehaviour
 
                 rb.linearVelocity = new Vector2(x, y);
             }
-            AudioManager.Instance.PlaySoundEffect(wallClip, 0.25f);
+            GameManager.Instance.PlaySoundEffect(wallClip, 0.25f);
         }
     }
 
@@ -80,8 +80,7 @@ public class BallCollision : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Block"))
         {
-            AudioManager.Instance.PlaySoundEffect(brickClip, 0.25f);
-            //AudioManager.Instance.PlaySoundEffectName("Brick", 0.25f);
+            GameManager.Instance.PlaySoundEffect(brickClip, 0.25f);
             Destroy(collision.gameObject);
             GameManager.Instance.DecreaseBlock();
         }
@@ -89,7 +88,7 @@ public class BallCollision : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        AudioManager.Instance.PlaySoundEffect(ballFailClip, 0.5f);
+        GameManager.Instance.PlaySoundEffect(ballFailClip, 0.5f);
         GameManager.Instance.RestartScene();
     }
 }

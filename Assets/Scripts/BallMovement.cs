@@ -2,9 +2,8 @@ using UnityEngine;
 
 public class BallMovement : MonoBehaviour
 {
-    Rigidbody2D rb;
+    static Rigidbody2D rb;
 
-    //[SerializeField] Vector2 launchForce;
     Vector2 launchForce;
     bool IsBallLaunched;
 
@@ -27,5 +26,11 @@ public class BallMovement : MonoBehaviour
         rb.AddForce(launchForce);
         transform.parent = null;
         IsBallLaunched = true;
+    }
+
+    public static void StopBall()
+    {
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
     }
 }
