@@ -24,6 +24,15 @@ public class BallCollision : MonoBehaviour
         if (collision.gameObject.name == "Player")
         {
             GameManager.Instance.PlaySoundEffect(playerClip, 0.5f);
+            // Horizontal difference between ball and paddle
+            // float difference = (transform.position.x - collision.transform.position.x) * 2f;
+            float difference = transform.position.x - collision.transform.position.x;
+            // New direction
+            Vector2 direction = new Vector2(difference, 1).normalized;
+            // Maintain constant speed
+            float speed = rb.linearVelocity.magnitude;
+
+            rb.linearVelocity = direction * speed;
         }
         if (collision.gameObject.tag == "Wall")
         {

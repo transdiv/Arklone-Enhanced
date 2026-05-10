@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -19,11 +20,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] AudioClip quitGameClip;
     [SerializeField] AudioClip levelEndClip;
     [SerializeField] AudioClip cheersClip;
-    [SerializeField] private AudioSource sfxAudioSource, musicAudioSource;
+    [SerializeField] AudioSource sfxAudioSource, musicAudioSource;
+
+    TextMeshProUGUI scoreText;
+    TextMeshProUGUI minimunText;
+
+    BallMovement ballMovement;
 
     public float timer = 0;
     public bool timerOn = false;
     public float minimunTime = 999999f;
+
+    private PlayerInput playerInput;
 
     public static GameManager Instance { get; private set; }
 
@@ -38,8 +46,14 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
+        playerInput = GetComponent<PlayerInput>();
+        if (playerInput == null)
+        {
+            Debug.Log("PlayerInput component not found on GameManager.");
+        }
+
     }
-        private void OnEnable()
+    private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -57,6 +71,11 @@ public class GameManager : MonoBehaviour
         if (activeSceneIndex > 0 && activeSceneIndex < lastScene)
         {
             timerOn = true;
+            scoreText = GameObject.Find("ScoreText")?.GetComponent<TextMeshProUGUI>();
+            minimunText = GameObject.Find("MinimunText")?.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI level = GameObject.Find("LevelText")?.GetComponent<TextMeshProUGUI>();
+            level.text = string.Format("{00000}", activeSceneIndex);
+            ballMovement = FindFirstObjectByType<BallMovement>();
         }
         if (activeSceneIndex == lastScene)
         {
@@ -67,9 +86,15 @@ public class GameManager : MonoBehaviour
             {
                 ActivateImageByName("Smiley");
                 PlaySoundEffect(cheersClip, 0.5f);
-                SaveScore((int) timer);
+                SaveScore((int)timer);
             }
         }
+    }
+
+    public void UpdateScore()
+    {
+        scoreText.text = string.Format(" {00000}", Math.Floor(timer));
+        minimunText.text = string.Format(" {00000}", Math.Floor(minimunTime));
     }
 
     public void ActivateImageByName(string objectName)
@@ -86,13 +111,14 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        
         ReadScore();
-        // ResetScore();
-        // SceneManager.LoadScene(5);
-        // timerOn = true;
+        //ResetScore();
+        //SceneManager.LoadScene(5); // For testing purposes, load the end scene directly
+        //timerOn = true;
     }
 
-    
+
     public void RestartScene()
     {
         SceneManager.LoadScene(activeSceneIndex);
@@ -124,36 +150,69 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        bool exit = playerInput.actions["Exit"].WasPressedThisFrame();
+        bool changeFullscreen = playerInput.actions["ChangeFullscreen"].WasPressedThisFrame();
+        bool tilt = playerInput.actions["Tilt"].WasPressedThisFrame();
+
         if (timerOn == true)
         {
             timer += Time.deltaTime;
         }
-        if (Input.GetKey("escape") && activeSceneIndex > 0 && activeSceneIndex < lastScene)
+        if (exit && activeSceneIndex > 0 && activeSceneIndex < lastScene)
         {
-            Debug.Log("Escape key pressed. Attempting to quit the game.");
             if (quit == false)
             {
                 quit = true;
                 QuitGame();
             }
         }
+        if (tilt && activeSceneIndex > 0 && activeSceneIndex < lastScene)
+        {
+            if (quit == false)
+            {
+                ballMovement.Tilt();
+            }
+        }
+
+        if (changeFullscreen)
+        {
+            if (quit == false)
+            {
+                SetFullscreen(!Screen.fullScreen);
+            }
+        }
     }
 
     public void QuitGame()
     {
-        BallMovement.StopBall();
+        if (ballMovement != null)
+        {
+            ballMovement.StopBall();
+        }
         StartCoroutine(QuitAfterSound());
     }
 
     private IEnumerator QuitAfterSound()
     {
-        PlaySoundEffect(quitGameClip, 0.5f);
+        PlaySoundEffect(quitGameClip, 0.3f);
         yield return new WaitForSeconds(quitGameClip.length);
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false;
 #else
         Application.Quit();
 #endif
+    }
+
+    public void SetFullscreen(bool fullscreen)
+    {
+        if (fullscreen)
+        {
+            Screen.SetResolution(1920, 1080, FullScreenMode.FullScreenWindow);
+        }
+        else
+        {
+            Screen.SetResolution(1280, 720, FullScreenMode.Windowed);
+        }
     }
 
     void ReadScore()
@@ -163,7 +222,6 @@ public class GameManager : MonoBehaviour
             minimunTime = PlayerPrefs.GetInt("highScore");
             if (minimunTime == 0)
             {
-                Debug.Log("No high score found, setting to default value.");
                 PlayerPrefs.SetInt("highScore", 999999);
                 PlayerPrefs.Save();
                 minimunTime = 999999f;

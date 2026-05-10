@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using System;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 public class PlayerMovement : MonoBehaviour
@@ -13,21 +10,24 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] TextMeshProUGUI minimunTime;
     float bounds = 5.05f;
 
+    private PlayerInput playerInput;
+
     private void Start()
     {
+        playerInput = GetComponent<PlayerInput>();
     }
 
     // Update is called once per frame
     void Update()
     {
         Move();
-        score.text = string.Format(" {00000}", Math.Floor(GameManager.Instance.timer));
-        minimunTime.text = string.Format(" {00000}", Math.Floor(GameManager.Instance.minimunTime));
+        GameManager.Instance.UpdateScore();
     }
 
     private void Move()
     {
-        float xInput = Input.GetAxisRaw("Horizontal");
+        Vector2 input = playerInput.actions["Move"].ReadValue<Vector2>();
+        float xInput = input.x;
         float newPositionX = transform.position.x + speed * xInput * Time.deltaTime;
         if (newPositionX < bounds && newPositionX > -bounds)
         {
