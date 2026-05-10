@@ -11,7 +11,7 @@ The "Enhancements" :) are:
 - There is a Exit button in the menu to exit the game.
 - In the executable game you can press F11 to switch fullscreen or windowed mode.
 
-You can play the webgl version here: https://transdiv.itch.io/dungeon-shooter
+You can play the webgl version here: https://transdiv.itch.io/arklone
 
 TransDiv
 transdiv@gmail.com
